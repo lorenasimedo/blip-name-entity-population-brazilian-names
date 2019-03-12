@@ -1,2 +1,2 @@
-# blip-name-entity-population-brazilian-names
+# name-population
 Populates a blip name entity with most popular Brazilian names
