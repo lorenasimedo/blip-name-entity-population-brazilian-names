@@ -1,11 +1,8 @@
 version: '2'
 services:
   name-population:
-    restart: always
     build: .
     env_file:
       .env
     volumes:
       - .:/app
-    ports:
-      - 8000:8000

@@ -16,7 +16,7 @@ def main():
     bp = BlipPopulation()
     bp.populate(gn.names)
     entities = bp.list_entities()
-    logging.info("Entities: " + str(entities))
+    ("Entities: {}".format(entities))
 
 
 if __name__ == "__main__":

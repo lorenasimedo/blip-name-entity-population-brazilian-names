@@ -1,9 +1,8 @@
 FROM python:3.6.2-slim
+MAINTAINER Lorena Barreto <lorenasimedo@gmail.com>
 
 RUN apt-get update && apt-get install -qq -y \
-  build-essential libpq-dev libffi-dev --no-install-recommends
-
-EXPOSE 8000
+  build-essential --no-install-recommends
 
 RUN mkdir /app
 WORKDIR /app

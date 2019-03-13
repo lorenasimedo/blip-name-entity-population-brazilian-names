@@ -1,6 +1,7 @@
 import logging
 import os
 import requests
+import uuid
 import simplejson as json
 
 logging.basicConfig(
@@ -34,12 +35,12 @@ class BlipPopulation:
             request = requests.post(
                 url=self.blip_url,
                 headers={
-                    "Authorization": "Key " + self.blip_key,
+                    "Authorization": "Key {}".format(self.blip_key),
                     "Content-Type": "application/json; charset=utf-8",
                 },
                 data=json.dumps(
                     {
-                        "id": "3",
+                        "id": str(uuid.uuid1()),
                         "to": "postmaster@ai.msging.net",
                         "method": "get",
                         "uri": "/entities"
@@ -49,13 +50,11 @@ class BlipPopulation:
         except Exception as e:
             logging.error(e)
             raise Exception("Exception while migrating")
-            return None
         if "resource" in request.json():
             return request.json().get("resource").get("items")
         else:
             logging.warning(str(request.json()))
             raise Exception("Error in BLiP while migrating")
-            return None
 
     def get_entity(self, entitie_id):
         '''Get a entitie by it`s entitie_id. Return None in case of fail.'''
@@ -69,7 +68,7 @@ class BlipPopulation:
                 },
                 data=json.dumps(
                     {
-                        "id": "3",
+                        "id": str(uuid.uuid1()),
                         "to": "postmaster@ai.msging.net",
                         "method": "get",
                         "uri": "/entities/" + entitie_id
@@ -79,7 +78,6 @@ class BlipPopulation:
         except Exception as e:
             logging.error(e)
             raise Exception("Exception while populating")
-            return None
         if "resource" in request.json():
             return request.json().get("resource").get("items")
         else:
@@ -98,7 +96,7 @@ class BlipPopulation:
                 },
                 data=json.dumps(
                     {
-                        "id": "1",
+                        "id": str(uuid.uuid1()),
                         "to": "postmaster@ai.msging.net",
                         "method": "set",
                         "uri": "/entities",
@@ -110,12 +108,10 @@ class BlipPopulation:
         except Exception as e:
             logging.error(e)
             raise Exception("Exception while populating")
-            return None
         if ("status" not in request.json() or
                 request.json().get("status") != "success"):
             logging.warning(str(request.json()))
             raise Exception("Error in BLiP while populating")
-            return None
         else:
             return request.json().get("resource").get("id")
 
@@ -132,7 +128,7 @@ class BlipPopulation:
                 },
                 data=json.dumps(
                     {
-                        "id": "1",
+                        "id": str(uuid.uuid1()),
                         "to": "postmaster@ai.msging.net",
                         "method": "delete",
                         "uri": "/entities" + entity_id
@@ -142,12 +138,10 @@ class BlipPopulation:
         except Exception as e:
             logging.error(e)
             raise Exception("Exception while migrating")
-            return False
         if ("status" not in request.json() or
                 request.json().get("status") != "success"):
             logging.warning(str(request.json()))
             raise Exception("Error in BLiP while migrating")
-            return False
         else:
             return True
 
@@ -164,7 +158,7 @@ class BlipPopulation:
                 },
                 data=json.dumps(
                     {
-                        "id": "6",
+                        "id": str(uuid.uuid1()),
                         "to": "postmaster@ai.msging.net",
                         "method": "set",
                         "uri": "/models",
@@ -177,12 +171,10 @@ class BlipPopulation:
         except Exception as e:
             logging.error(e)
             raise Exception("Exception while populating")
-            return None
         if ("status" not in request.json() or
                 request.json().get("status") != "success"):
             logging.warning(str(request.json()))
             raise Exception("Error in BLiP while populating")
-            return None
         request = None
         try:
             request = requests.post(
@@ -193,7 +185,7 @@ class BlipPopulation:
                 },
                 data=json.dumps(
                     {
-                        "id": "7",
+                        "id": str(uuid.uuid1()),
                         "to": "postmaster@ai.msging.net",
                         "method": "get",
                         "uri": "/models"
@@ -203,16 +195,13 @@ class BlipPopulation:
         except Exception as e:
             logging.error(e)
             raise Exception("Exception while populating")
-            return None
         if ("status" not in request.json() or
                 request.json().get("status") != "success"):
             logging.warning(str(request.json()))
             raise Exception("Error in BLiP while populating")
-            return None
         if ("resource" not in request.json()):
             logging.warning(str(request.json()))
             raise Exception("Error in BLiP while populating")
-            return None
         ids = []
         for i in request.json().get("resource").get("items"):
             ids.append(i.get("id"))
@@ -232,7 +221,7 @@ class BlipPopulation:
                     },
                     data=json.dumps(
                         {
-                            "id": "8",
+                            "id": str(uuid.uuid1()),
                             "to": "postmaster@ai.msging.net",
                             "method": "set",
                             "uri": "/models",
@@ -247,11 +236,9 @@ class BlipPopulation:
             except Exception as e:
                 logging.error(e)
                 raise Exception("Exception while populating")
-                return False
             if request.json().get("status") != "success":
                 logging.warning(str(request.json()))
                 raise Exception("Error in BLiP while populating")
-                return False
         return True
 
     def populate(self, names_list):
@@ -264,17 +251,13 @@ class BlipPopulation:
         valid = self.set_entity(names)
         if not valid:
             logging.error("Error while creating the entitie")
-            return False
 
         # Training
         ids = self.train_model()
         if ids is None:
             logging.error("Error while training the model")
-            return False
         else:
             # Publishing
             valid = self.publish_model(ids)
             if not valid:
                 logging.error("Error while publishing the models")
-                return False
-        return True
