@@ -178,9 +178,10 @@ class BlipPopulation:
         request = None
         try:
             request = requests.post(
-                url=self.blip_source_url,
+                timeout=60,
+                url=self.blip_url,
                 headers={
-                    "Authorization": "Key " + self.blip_source_key,
+                    "Authorization": "Key " + self.blip_key,
                     "Content-Type": "application/json; charset=utf-8",
                 },
                 data=json.dumps(
@@ -214,6 +215,7 @@ class BlipPopulation:
             request = None
             try:
                 request = requests.post(
+                    timeout=60,
                     url=self.blip_url,
                     headers={
                         "Authorization": "Key " + self.blip_key,
